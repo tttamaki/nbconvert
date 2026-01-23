@@ -53,7 +53,12 @@ override this.-=))
               \usepackage[mathletters]{ucs}
               \usepackage[utf8x]{inputenc}
           }
-    \else
+    \fi
+    \ifXeTeX
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+    \ifLuaTeX
         \usepackage{fontspec}
         \usepackage{unicode-math}
     \fi
