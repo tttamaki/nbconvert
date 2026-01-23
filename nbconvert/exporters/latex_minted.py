@@ -8,6 +8,7 @@ import os
 from traitlets import default
 
 from nbconvert.filters.highlight_minted import Highlight2LatexMinted
+from nbconvert.filters.markdown_minted import apply_minted_filter
 from nbconvert.filters.pandoc import ConvertExplicitlyRelativePaths
 
 from .latex import LatexExporter
@@ -30,6 +31,9 @@ class LatexMintedExporter(LatexExporter):
         # Register our custom minted highlight filter (no pygments)
         highlight_code = Highlight2LatexMinted(parent=self)
         self.register_filter("highlight_code", highlight_code)
+
+        # Register minted filter for markdown code blocks
+        self.register_filter("apply_minted_filter", apply_minted_filter)
 
         # Need to handle explicit relative paths like parent does
         nb_path = resources.get("metadata", {}).get(

@@ -11,7 +11,68 @@
 ((*- endblock packages -*))
 
 ((*- block definitions -*))
-    ((( super() )))
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+    % Note: Pandoc highlighting commands (KeywordTok, etc.) and Shaded/Highlighting
+    % environments are intentionally omitted as minted handles all highlighting
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    ((* block title -*))
+    ((*- set nb_title = nb.metadata.get('title', '') or resources['metadata']['name'] -*))
+    \title{((( nb_title | escape_latex )))}
+    ((*- endblock title *))
+    ((* block date *))
+    ((* if 'date' in nb.metadata *))
+    \date{((( nb.metadata.date | escape_latex )))}
+    ((* endif *))
+    ((* endblock date *))
+    ((* block author *))
+    ((* if 'authors' in nb.metadata *))
+    \author{((( nb.metadata.authors | join(', ', attribute='name') )))}
+    ((* endif *))
+    ((* endblock author *))
 
     % Exact colors from NB
     ((*- block style_colors *))
@@ -40,6 +101,14 @@
 ((* block input scoped *))
     ((( draw_cell_minted(cell.source | highlight_code(strip_verbatim=True), cell, 'In', 'incolor', '\\boxspacing') )))
 ((* endblock input *))
+
+%===============================================================================
+% Markdown
+%===============================================================================
+
+((* block markdowncell scoped *))
+    ((( cell.source | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash', 'json', extra_args=[]) | apply_minted_filter | resolve_references | convert_explicitly_relative_paths | convert_pandoc('json','latex') )))
+((* endblock markdowncell *))
 
 
 %===============================================================================

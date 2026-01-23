@@ -13,6 +13,7 @@ from .markdown import (
     markdown2latex,
     markdown2rst,
 )
+from .markdown_minted import apply_minted_filter
 from .metadata import get_metadata
 from .pandoc import ConvertExplicitlyRelativePaths, convert_pandoc
 from .strings import (
@@ -43,6 +44,7 @@ __all__ = [
     "add_prompts",
     "ansi2html",
     "ansi2latex",
+    "apply_minted_filter",
     "ascii_only",
     "citation2latex",
     "clean_html",
