@@ -59,6 +59,8 @@ inherit either directly or indirectly from
 
 .. autoclass:: LatexExporter
 
+.. autoclass:: LatexMintedExporter
+
 .. autoclass:: MarkdownExporter
 
 .. autoclass:: PDFExporter
