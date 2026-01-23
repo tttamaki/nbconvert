@@ -3,6 +3,7 @@ from .base import ExporterDisabledError, ExporterNameError, export, get_export_n
 from .exporter import Exporter, FilenameExtension, ResourcesDict
 from .html import HTMLExporter
 from .latex import LatexExporter
+from .latex_minted import LatexMintedExporter
 from .markdown import MarkdownExporter
 from .notebook import NotebookExporter
 from .pdf import PDFExporter
@@ -23,6 +24,7 @@ __all__ = [
     "FilenameExtension",
     "HTMLExporter",
     "LatexExporter",
+    "LatexMintedExporter",
     "MarkdownExporter",
     "NotebookExporter",
     "PDFExporter",

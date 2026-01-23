@@ -1,0 +1,115 @@
+((=- IPython input/output style with minted for highlighting -=))
+((*- extends 'base.tex.j2' -*))
+
+((*- block packages -*))
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    \usepackage{minted}
+    ((( super() )))
+((*- endblock packages -*))
+
+((*- block definitions -*))
+    ((( super() )))
+
+    % Exact colors from NB
+    ((*- block style_colors *))
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    ((*- endblock style_colors *))
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    ((*- block style_prompt *))
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    ((* endblock style_prompt *))
+
+((*- endblock definitions -*))
+
+%===============================================================================
+% Input
+%===============================================================================
+
+((* block input scoped *))
+    ((( draw_cell_minted(cell.source | highlight_code(strip_verbatim=True), cell, 'In', 'incolor', '\\boxspacing') )))
+((* endblock input *))
+
+
+%===============================================================================
+% Output
+%===============================================================================
+
+((*- if charlim is not defined -*))
+    ((* set charlim = 80 *))
+((*- endif -*))
+
+((* block execute_result scoped *))
+    ((*- for type in output.data | filter_data_type -*))
+        ((*- if type in ['text/plain']*))
+            ((( draw_cell(output.data['text/plain'] | wrap_text(charlim) | escape_latex | ansi2latex, cell, 'Out', 'outcolor', '\\boxspacing') )))
+        ((* else -*))
+            ((( " " )))
+            ((( draw_prompt(cell, 'Out', 'outcolor','') )))((( super() )))
+        ((*- endif -*))
+    ((*- endfor -*))
+((* endblock execute_result *))
+
+((* block stream *))
+    \begin{Verbatim}[commandchars=\\\{\}]
+((( output.text | wrap_text(charlim) | escape_latex | strip_trailing_newline | ansi2latex )))
+    \end{Verbatim}
+((* endblock stream *))
+
+%==============================================================================
+% Support Macros
+%==============================================================================
+
+% Name: draw_cell_minted
+% Purpose: Renders an input cell with minted highlighting
+((*- if draw_cell_minted is not defined -*))
+((* macro draw_cell_minted(text, cell, prompt, prompt_color, extra_space) -*))
+((*- set style = "breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder"-*))
+
+\begin{tcolorbox}[((( style )))]
+(((- draw_prompt(cell, prompt, prompt_color, extra_space) )))
+\begin{minted}[breaklines]{python3}
+((( text )))
+\end{minted}
+\end{tcolorbox}
+((*- endmacro *))
+((*- endif -*))
+
+% Name: draw_cell
+% Purpose: Renders an output/input prompt (reuse from style_jupyter)
+((*- if draw_cell is not defined -*))
+((* macro draw_cell(text, cell, prompt, prompt_color, extra_space) -*))
+((*- if prompt == 'In' -*))
+((*- set style = "breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder"-*))
+((*- else -*))((*- set style = "breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0"-*))((*-  endif -*))
+
+\begin{tcolorbox}[((( style )))]
+(((- draw_prompt(cell, prompt, prompt_color, extra_space) )))
+\begin{Verbatim}[commandchars=\\\{\}]
+((( text )))
+\end{Verbatim}
+\end{tcolorbox}
+((*- endmacro *))
+((*- endif -*))
+
+% Name: draw_prompt
+% Purpose: Renders an output/input prompt
+((* macro draw_prompt(cell, prompt, prompt_color, extra_space) -*))
+    ((*- if cell.execution_count is defined -*))
+    ((*- set execution_count = "" ~ (cell.execution_count | replace(None, " ")) -*))
+    ((*- else -*))((*- set execution_count = " " -*))((*- endif *))
+
+    ((*- if (resources.global_content_filter.include_output_prompt and prompt == 'Out')
+         or (resources.global_content_filter.include_input_prompt  and prompt == 'In' ) *))
+\prompt{(((prompt)))}{(((prompt_color)))}{(((execution_count)))}{(((extra_space)))}
+    ((*- endif -*))
+((*- endmacro *))
