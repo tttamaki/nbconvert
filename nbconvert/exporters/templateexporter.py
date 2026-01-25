@@ -59,6 +59,7 @@ default_filters = {
     "html2text": filters.html2text,
     "add_anchor": filters.add_anchor,
     "ansi2latex": filters.ansi2latex,
+    "ansi2latex_bw": filters.ansi2latex_bw,
     "wrap_text": filters.wrap_text,
     "escape_latex": filters.escape_latex,
     "citation2latex": filters.citation2latex,

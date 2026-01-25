@@ -7,6 +7,7 @@
     \usepackage[breakable]{tcolorbox}
     \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
     \usepackage{minted}
+    \setminted{breaklines, style=bw, linenos=false, fontsize=\small, baselinestretch=0.8, autogobble}
     \usepackage{bm}
     ((( super() )))
 
@@ -154,7 +155,12 @@
 ((* endblock execute_result *))
 
 ((* block stream *))
-    \begin{Verbatim}[commandchars=\\\{\}]
+    \begin{Verbatim}[
+    vspace=0pt,
+    fontsize=\small,
+    baselinestretch=0.8,
+    commandchars=\\\{\}
+]
 ((( output.text | wrap_text(charlim) | escape_latex | strip_trailing_newline | ansi2latex )))
     \end{Verbatim}
 ((* endblock stream *))
@@ -167,7 +173,7 @@
 % Purpose: Renders an input cell with minted highlighting
 ((*- if draw_cell_minted is not defined -*))
 ((* macro draw_cell_minted(text, cell, prompt, prompt_color, extra_space) -*))
-((*- set style = "breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder"-*))
+((*- set style = "breakable, size=fbox, boxrule=1pt, pad at break*=1mm, left=1mm, right=1mm, top=1mm, bottom=1mm, beforeafter skip balanced=1mm, colback=cellbackground, colframe=cellborder"-*))
 
 \begin{tcolorbox}[((( style )))]
 (((- draw_prompt(cell, prompt, prompt_color, extra_space) )))
@@ -183,12 +189,17 @@
 ((*- if draw_cell is not defined -*))
 ((* macro draw_cell(text, cell, prompt, prompt_color, extra_space) -*))
 ((*- if prompt == 'In' -*))
-((*- set style = "breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder"-*))
-((*- else -*))((*- set style = "breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0"-*))((*-  endif -*))
+((*- set style = "breakable, size=fbox, boxrule=1pt, pad at break*=1mm, left=1mm, right=1mm, top=1mm, bottom=1mm, beforeafter skip balanced=1mm, colback=cellbackground, colframe=cellborder"-*))
+((*- else -*))((*- set style = "breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, left=1mm, right=1mm, top=1mm, bottom=1mm, beforeafter skip balanced=1mm, opacityfill=0"-*))((*-  endif -*))
 
 \begin{tcolorbox}[((( style )))]
 (((- draw_prompt(cell, prompt, prompt_color, extra_space) )))
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{Verbatim}[
+    vspace=0pt,
+    fontsize=\small,
+    baselinestretch=0.8,
+    commandchars=\\\{\}
+]
 ((( text )))
 \end{Verbatim}
 \end{tcolorbox}

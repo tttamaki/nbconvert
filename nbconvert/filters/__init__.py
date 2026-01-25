@@ -1,6 +1,6 @@
 from nbconvert.utils.text import indent
 
-from .ansi import ansi2html, ansi2latex, strip_ansi
+from .ansi import ansi2html, ansi2latex, ansi2latex_bw, strip_ansi
 from .citation import citation2latex
 from .datatypefilter import DataTypeFilter
 from .highlight import Highlight2HTML, Highlight2Latex
@@ -44,6 +44,7 @@ __all__ = [
     "add_prompts",
     "ansi2html",
     "ansi2latex",
+    "ansi2latex_bw",
     "apply_minted_filter",
     "ascii_only",
     "citation2latex",

@@ -7,7 +7,7 @@ import re
 
 import markupsafe
 
-__all__ = ["ansi2html", "ansi2latex", "strip_ansi"]
+__all__ = ["ansi2html", "ansi2latex", "ansi2latex_bw", "strip_ansi"]
 
 _ANSI_RE = re.compile("\x1b\\[(.*?)([@-~])")
 
@@ -69,6 +69,23 @@ def ansi2latex(text):
 
     """
     return _ansi2anything(text, _latexconverter)
+
+
+def ansi2latex_bw(text):
+    """
+    Convert ANSI colors to LaTeX with monochrome (black and white) output.
+
+    ANSI escape codes are stripped, preserving only bold and underline formatting.
+    This is useful for tracebacks and other output where color information
+    should not be preserved.
+
+    Parameters
+    ----------
+    text : unicode
+        Text containing ANSI colors to convert to LaTeX (colors removed)
+
+    """
+    return _ansi2anything(text, _latexconverter_bw)
 
 
 def _htmlconverter(fg, bg, bold, underline, inverse):
@@ -133,7 +150,8 @@ def _latexconverter(fg, bg, bold, underline, inverse):
     elif fg:
         # See http://tex.stackexchange.com/a/291102/13684
         starttag += r"\def\tcRGB{\textcolor[RGB]}\expandafter"
-        starttag += r"\tcRGB\expandafter{{\detokenize{{{},{},{}}}}}{{".format(*fg)
+        starttag += r"\tcRGB\expandafter{{\detokenize{{{},{},{}}}}}{{".format(
+            *fg)
         endtag = "}" + endtag
     elif inverse:
         starttag += r"\textcolor{ansi-default-inverse-fg}{"
@@ -147,12 +165,37 @@ def _latexconverter(fg, bg, bold, underline, inverse):
         starttag += r"\setlength{\fboxsep}{0pt}"
         # See http://tex.stackexchange.com/a/291102/13684
         starttag += r"\def\cbRGB{\colorbox[RGB]}\expandafter"
-        starttag += r"\cbRGB\expandafter{{\detokenize{{{},{},{}}}}}{{".format(*bg)
+        starttag += r"\cbRGB\expandafter{{\detokenize{{{},{},{}}}}}{{".format(
+            *bg)
         endtag = r"\strut}" + endtag
     elif inverse:
         starttag += r"\setlength{\fboxsep}{0pt}"
         starttag += r"\colorbox{ansi-default-inverse-bg}{"
         endtag = r"\strut}" + endtag
+
+    if bold:
+        starttag += r"\textbf{"
+        endtag = "}" + endtag
+
+    if underline:
+        starttag += r"\underline{"
+        endtag = "}" + endtag
+
+    return starttag, endtag
+
+
+def _latexconverter_bw(fg, bg, bold, underline, inverse):
+    """
+    Return start and end markup for monochrome LaTeX conversion.
+
+    Only bold and underline formatting are applied; color information is ignored.
+    """
+    if (fg, bg, bold, underline, inverse) == (None, None, False, False, False):
+        return "", ""
+
+    starttag, endtag = "", ""
+
+    # Ignore colors (fg, bg, inverse) - only process formatting
 
     if bold:
         starttag += r"\textbf{"
@@ -192,18 +235,20 @@ def _ansi2anything(text, converter):
             if m.group(2) == "m":
                 try:
                     # Empty code is same as code 0
-                    numbers = [int(n) if n else 0 for n in m.group(1).split(";")]
+                    numbers = [
+                        int(n) if n else 0 for n in m.group(1).split(";")]
                 except ValueError:
                     pass  # Invalid color specification
             else:
                 pass  # Not a color code
-            chunk, text = text[: m.start()], text[m.end() :]
+            chunk, text = text[: m.start()], text[m.end():]
         else:
             chunk, text = text, ""
 
         if chunk:
             starttag, endtag = converter(
-                fg + 8 if bold and fg in range(8) else fg,  # type:ignore[operator]
+                # type:ignore[operator]
+                fg + 8 if bold and fg in range(8) else fg,
                 bg,
                 bold,
                 underline,
