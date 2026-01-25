@@ -4,7 +4,8 @@ Converts links between notebooks to Latex cross-references.
 
 import re
 
-from pandocfilters import RawInline, applyJSONFilters, stringify  # type:ignore[import-untyped]
+# type:ignore[import-untyped]
+from pandocfilters import RawInline, applyJSONFilters, stringify
 
 
 def resolve_references(source):
@@ -28,7 +29,18 @@ def resolve_one_reference(key, val, fmt, meta):
     """
 
     if key == "Link":
-        text = stringify(val[1])
+        # Build text preserving math elements
+        text_parts = []
+        for item in val[1]:
+            if isinstance(item, dict) and item.get("t") == "Math":
+                # Math element: wrap content with $
+                text_parts.append(f"${item['c'][1]}$")
+            elif isinstance(item, dict) and item.get("t") == "Str":
+                text_parts.append(item["c"])
+            elif isinstance(item, dict) and item.get("t") == "Space":
+                text_parts.append(" ")
+        text = "".join(text_parts) if text_parts else stringify(val[1])
+
         target = val[2][0]
         m = re.match(r"#(.+)$", target)
         if m:
