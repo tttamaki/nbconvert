@@ -78,6 +78,7 @@ default_filters = {
     "clean_html": filters.clean_html,
     "strip_trailing_newline": filters.strip_trailing_newline,
     "text_base64": filters.text_base64,
+    "apply_minted_filter": filters.apply_minted_filter,
 }
 
 
