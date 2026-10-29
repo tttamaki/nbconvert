@@ -1,4 +1,6 @@
-NOTEBOOKS := sc1.ipynb sc2.ipynb sc3.ipynb sc4.ipynb sc5.ipynb sc6.ipynb sc7.ipynb
+NOTEBOOK_DIR ?= .
+NOTEBOOK_NAMES := sc1.ipynb sc2.ipynb sc3.ipynb sc4.ipynb sc5.ipynb sc6.ipynb sc7.ipynb
+NOTEBOOKS := $(addprefix $(NOTEBOOK_DIR)/,$(NOTEBOOK_NAMES))
 PDFS := $(NOTEBOOKS:.ipynb=.pdf)
 
 NBCONVERT := jupyter nbconvert
