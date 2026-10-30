@@ -47,3 +47,13 @@ share/templates/lab/static/theme-light.css
 share/templates/classic/static/style.css
 
 _minted/
+*.aux
+*.dvi
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.fls
+*.png
+*.pdf
